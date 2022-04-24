@@ -4,10 +4,11 @@
 using namespace std;
 
 //array sizes
-const int DOC_NUM = 100;
-const int PATIENT_NUM=100;
-const int DATE_NUM = 100;
-const int APPOINT_NUM = 100;
+const int DOC_NUM = 10;
+const int PATIENT_NUM=10;
+const int DATE_NUM = 10;
+const int APPOINT_NUM = 10;
+
 
 //structure types
 struct date {
@@ -28,148 +29,194 @@ struct doc {
 	string password;
 	string name;
 } infoDocs[DOC_NUM];
+struct appoint {
+	patient appointPatient;
+	doc appointDoc;
+	date appointDate;
+	string timeSlot;
+}infoAppoints[APPOINT_NUM];
 
 //global variables
 string username, password;
 int lastPatient = 0;
 int lastDoc = 0;
+int lastAppoint = 0;
+
+//gen functions 
+void chooseDate(appoint infoAppoints[], int i);
+void chooseTimeSLot(appoint ainfoAppointsrr[], int i);
+void display(appoint appointment);
+void display(date someDate);
 
 //patient functions
 int patientLogin();
 void patientReg();
 void displayPatientMenu(int i);
-void makeAppoint(int i);
-void editAppoint(int i);
-void cancelAppoint(int i);
+void makeAppoint(appoint infoAppoints[], doc infoDocs[], int patientIndex);
+void viewAppoints(appoint infoAppoints[], patient infoPatients[], int patientIndex);
+void editAppoint(appoint infoAppoints[], int patientIndex);
+void cancelAppoint(appoint infoAppoints[], int patientIndex);
 
 //doctor functions
 int docLogin();
 void docReg();
 void displayDocMenu(int i);
 
+
 int main() //start of main
 {
+	menu1:
 	cout << "\n**************************************************\n\n"
 		<< "************** Welcome to E7gezly **************\n"
 		<< "\n**************************************************\n\n";
 
 	int status;
 
-	menu1: //main menu
-	do {
+	menu2: //main menu
+do {
 
-		cout << "Are you a doctor or patient?\n\n"
-			<< "1 \t Patient \n"
-			<< "2 \t Doctor\n\n"
+	cout << "Are you a patient or doctor?\n\n"
+		<< "1 \t Patient \n"
+		<< "2 \t Doctor\n\n"
+		<< "Selection: ";
+
+	int userMode;
+	cin >> userMode;
+	int selection;
+
+
+	switch (userMode)
+	{
+	case 1: //patient
+		cout
+			<< "\n"
+			<< "1 \t Login \n"
+			<< "2 \t Register\n"
+			<< "3 \t Previous menu\n\n"//incomplete 
 			<< "Selection: ";
 
-		int userMode;
-		cin >> userMode;
-		int selection;
+		cin >> selection;
 
-
-		switch (userMode)
+		switch (selection)
 		{
-		case 1: //patient
-			cout
-				<<"\n"
-				<< "1 \t Login \n"
-				<< "2 \t Register\n"
-				<< "3 \t Previous menu\n\n"//incomplete 
-				<< "Selection: ";
-
-			cin >> selection;
-
-			switch (selection)
+		case 1: //login
+			int patientIndex;
+			patientIndex = patientLogin();
+			if (patientIndex != -1)
 			{
-			case 1: //login
-				int i;
-				i = patientLogin();
-				if (i != -1)
-				{
-					displayPatientMenu(i);
-				}
-				else
-					goto menu1;
-				break;
-			case 2: //register
-				patientReg();
-				break;
-			case 3:
+				displayPatientMenu(patientIndex);
 				goto menu1;
-				break;
-			default:
-				break;
 			}
+			else
+				goto menu2;
 			break;
-
-		case 2: //doctor
-			cout
-				<< "\n"
-				<< "1 \t Login \n"
-				<< "2 \t Register\n"
-				<< "3 \t Previos menu\n\n"//incomplete 
-				<< "Selection: ";
-
-			cin >> selection;
-
-			switch (selection)
-			{
-			case 1: //doc login
-
-				int i;
-				i = docLogin();
-				if (i != -1)
-				{
-					displayDocMenu(i);
-				}
-				else
-					goto menu1;
-				break;
-			case 2:
-				docReg();
-				break;
-			case 3:
-				goto menu1;
-			default:
-				break;
-			}
+		case 2: //register
+			patientReg();
 			break;
-
+		case 3:
+			goto menu2;
+			break;
 		default:
-			cout << "Please enter a valid choice!";
+			break;
 		}
-		//exit login menu
-		cout << "\n**************************************************\n\n"
-			<< "1 \t Main menu \n"
-			<< "2 \t Exit \n\n"
+		break;
+
+	case 2: //doctor
+		cout
+			<< "\n"
+			<< "1 \t Login \n"
+			<< "2 \t Register\n"
+			<< "3 \t Previos menu\n\n"//incomplete 
 			<< "Selection: ";
 
-		cin >> status;
+		cin >> selection;
 
-	} while (status != 2);
-	//exit main menu
-	cout << "\n******** Thank you for using E7gezly! ********\n";
+		switch (selection)
+		{
+		case 1: //doc login
 
-	return 0;
+			int i;
+			i = docLogin();
+			if (i != -1)
+			{
+				displayDocMenu(i);
+			}
+			else
+				goto menu2;
+			break;
+		case 2:
+			docReg();
+			break;
+		case 3:
+			goto menu2;
+		default:
+			break;
+		}
+		break;
+
+	default:
+		cout << "Please enter a valid choice!";
+	}
+	//exit login menu
+	cout << "\n**************************************************\n\n"
+		<< "1 \t Main menu \n"
+		<< "2 \t Exit \n\n"
+		<< "Selection: ";
+
+	cin >> status;
+
+} while (status != 2);
+//exit main menu
+cout << "\n******** Thank you for using E7gezly! ********\n";
+
+return 0;
 } // end of main
+
+//gen function declarations
+// 
+void chooseDate(appoint infoAppoints[], int i)
+{
+cout << "Please enter date: \n"
+	 <<"Day: ";
+cin >> infoAppoints[i].appointDate.day;
+cout << "Month: ";
+cin >> infoAppoints[i].appointDate.month;
+cout << "Year: ";
+cin >> infoAppoints[i].appointDate.year;
+}
+void chooseTimeSLot(appoint infoAppoints[], int i)
+{
+
+}
+
+void display(date someDate)
+{
+	cout << someDate.day << "/" << someDate.month << "/" << someDate.year << "\n";
+
+}
+void display(appoint appointment)
+{
+	cout << "Patient:" << appointment.appointPatient.name;
+	cout << "Doctor:" << appointment.appointDoc.name;
+	cout << "Date:";
+	display(appointment.appointDate);
+	cout << "Time: " << appointment.timeSlot;
+}
+
+
 
 //patient fucntion declarations
 void patientReg()
 {
+	cout << "Enter name: ";
+	cin >> infoPatients[lastPatient].name;
+	cout << "Enter age: ";
+	cin >> infoPatients[lastPatient].age;
 	cout << "Enter username: \n";
 	cin >> infoPatients[lastPatient].username;
-
 	cout << "Enter password: ";
 	cin >> infoPatients[lastPatient].password;
 
-
-	cout << "Enter name: ";
-	cin >> infoPatients[lastPatient].name;
-
-
-	cout << "Enter age: ";
-	cin >> infoPatients[lastPatient].age;
 
 	lastPatient++;
 }
@@ -196,42 +243,82 @@ int patientLogin()
 	cout << "\n Incorrect username or password! Please try again. \n\n";
 	return -1;
 }
-void displayPatientMenu(int i)
+void displayPatientMenu(int patientIndex)
 {
-	int selection;
-	cout << "What would you like to do?\n\n"
-		<< "1 \t Make an appointment \n"
-		<< "2 \t Edit an appointment\n\n"
-		<< "3 \t Cancel an appointment\n\n"
-		<< "Selection: ";
-	cin >> selection;
-	switch (selection)
+	char choice = 'y';
+	do
 	{
+		int selection;
+		cout << "What would you like to do?\n\n"
+			<< "1 \t Make an appointment \n"
+			<< "2 \t View my appointments \n"
+			<< "3 \t Edit an appointment\n\n"
+			<< "4 \t Cancel an appointment\n\n"
+			<< "5 \t Logout\n\n"
+			<< "Selection: ";
+		cin >> selection;
+		switch (selection)
+		{
 		case 1: //make an appointment
-			makeAppoint(i);
+			makeAppoint(infoAppoints, infoDocs, patientIndex);
 			break;
-		case 2: //edit  an appointment
-			editAppoint(i);
+		case 2: //view  my appointments
+			viewAppoints(infoAppoints, infoPatients, patientIndex);
 			break;
-		case 3: // cancel an appointment
-			cancelAppoint(i);
+		case 3: //edit  an appointment
+			editAppoint(infoAppoints, patientIndex);
+			break;
+		case 4: // cancel an appointment
+			cancelAppoint(infoAppoints, patientIndex);
+			break;
+		case 5: // logout
+			cout << "Are you sure you want to log out? (y/n)";
+			cin >> choice;
 			break;
 		default:
 			break;
+		}
+
+	} while (choice != 'y' &&  choice != 'Y');
+}
+void makeAppoint(appoint infoAppoints[], doc infoDocs[], int patientIndex)
+{
+	int selection;
+	cout << "Select doctor: \n\n";
+	for (int i = 0; i < lastDoc; i++)
+	{
+		cout << i + 1 << "\t" << infoDocs[i].name << "\n";
 	}
 
+		cout << "Selection: ";
+	cin >> selection;
 
+	int i = lastAppoint;
+	infoAppoints[i].appointPatient = infoPatients[patientIndex];
+	infoAppoints[i].appointDoc = infoDocs[selection-1];
+	chooseDate(infoAppoints, i);
+	chooseTimeSLot(infoAppoints, i);
+	lastAppoint++;
+	cout << "\n Appointment booked successfully!";
+} 
+void viewAppoints(appoint infoAppoints[], patient infoPatients[], int patientIndex)
+{
+	for(int i=0; i<=lastAppoint; i++)
+	{ 
+		if (infoAppoints[i].appointPatient.id == infoPatients[patientIndex].id)
+		{
+			cout << "#" << i + 1 << "\n";
+			display(infoAppoints[i]);
+			cout << "\n";
+		}
+	}
 }
-void makeAppoint(int i)
-{
-} 
-//incomplete
-void editAppoint(int i)
+void editAppoint(appoint infoAppoints[], int patientIndex)
 {
 
 } 
 //incomplete
-void cancelAppoint(int i)
+void cancelAppoint(appoint infoAppoints[], int patientIndex)
 {
 }
 //incomplete
@@ -239,6 +326,10 @@ void cancelAppoint(int i)
 //doc function declarations
 void docReg()
 {
+
+	cout << "Enter name: ";
+	cin >> infoDocs[lastDoc].name;
+
 	cout << "Enter username: \n";
 	cin >> infoDocs[lastDoc].username;
 
