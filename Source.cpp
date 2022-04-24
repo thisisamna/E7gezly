@@ -37,14 +37,14 @@ struct appoint {
 }infoAppoints[APPOINT_NUM];
 
 //global variables
-string username, password;
-int lastPatient = 0;
-int lastDoc = 0;
-int lastAppoint = 0;
+int lastPatient = 1;
+int lastDoc = 1;
+int lastAppoint = 1;
+string timeSlots[5] = { "09:00 - 10:00","10:00 - 11:00","11:00 - 12:00","12:00 - 01:00","01:00 - 02:00" };
+
 
 //gen functions 
 void chooseDate(appoint infoAppoints[], int i);
-void chooseTimeSLot(appoint ainfoAppointsrr[], int i);
 void display(appoint appointment);
 void display(date someDate);
 
@@ -186,7 +186,10 @@ cin >> infoAppoints[i].appointDate.year;
 }
 void chooseTimeSLot(appoint infoAppoints[], int i)
 {
-
+	cout << "Select time: \n";
+	for (int i = 0; i < 5; i++) 
+		cout << i + 1 << "\t" << timeSlots[i] << "\n";
+	cout << "Selection: ";
 }
 
 void display(date someDate)
@@ -196,11 +199,11 @@ void display(date someDate)
 }
 void display(appoint appointment)
 {
-	cout << "Patient:" << appointment.appointPatient.name;
-	cout << "Doctor:" << appointment.appointDoc.name;
+	cout << "Patient:" << appointment.appointPatient.name <<"\n";
+	cout << "Doctor:" << appointment.appointDoc.name << "\n";
 	cout << "Date:";
 	display(appointment.appointDate);
-	cout << "Time: " << appointment.timeSlot;
+	cout << "Time: " << appointment.timeSlot <<"\n";
 }
 
 
@@ -228,7 +231,7 @@ int patientLogin()
 	cout << "Enter password: ";
 	cin >> password;
 
-	for (int i = 0; i < PATIENT_NUM; i++)
+	for (int i = 1; i < PATIENT_NUM; i++)
 	{
 		if (username == infoPatients[i].username)
 		{
@@ -245,17 +248,18 @@ int patientLogin()
 }
 void displayPatientMenu(int patientIndex)
 {
-	char choice = 'y';
+	char choice = 'n';
 	do
 	{
-		int selection;
+		cout << "\n**************************************************\n\n";
 		cout << "What would you like to do?\n\n"
 			<< "1 \t Make an appointment \n"
 			<< "2 \t View my appointments \n"
-			<< "3 \t Edit an appointment\n\n"
-			<< "4 \t Cancel an appointment\n\n"
+			<< "3 \t Edit an appointment\n"
+			<< "4 \t Cancel an appointment\n"
 			<< "5 \t Logout\n\n"
 			<< "Selection: ";
+		int selection;
 		cin >> selection;
 		switch (selection)
 		{
@@ -284,30 +288,40 @@ void displayPatientMenu(int patientIndex)
 void makeAppoint(appoint infoAppoints[], doc infoDocs[], int patientIndex)
 {
 	int selection;
-	cout << "Select doctor: \n\n";
-	for (int i = 0; i < lastDoc; i++)
+	cout << "Select doctor: \n";
+	for (int i = 1; i < lastDoc; i++)
 	{
-		cout << i + 1 << "\t" << infoDocs[i].name << "\n";
+		cout << i << "\t" << infoDocs[i].name << "\n";
 	}
 
-		cout << "Selection: ";
+	cout << "\nSelection: ";
 	cin >> selection;
 
 	int i = lastAppoint;
 	infoAppoints[i].appointPatient = infoPatients[patientIndex];
-	infoAppoints[i].appointDoc = infoDocs[selection-1];
+	infoAppoints[i].appointDoc = infoDocs[selection - 1];
 	chooseDate(infoAppoints, i);
-	chooseTimeSLot(infoAppoints, i);
+
+	cout << "Select time: \n";
+	for (int i = 0; i < 5; i++)
+	{
+		cout << i + 1 << "\t" << timeSlots[i] << "\n";
+	}
+	cout << "Selection: ";
+	cin >> selection;
+	selection--;
+
+	infoAppoints[i].timeSlot = timeSlots[selection];
 	lastAppoint++;
-	cout << "\n Appointment booked successfully!";
-} 
+
+}
 void viewAppoints(appoint infoAppoints[], patient infoPatients[], int patientIndex)
 {
-	for(int i=0; i<=lastAppoint; i++)
+	for(int i=1; i<=lastAppoint; i++)
 	{ 
 		if (infoAppoints[i].appointPatient.id == infoPatients[patientIndex].id)
 		{
-			cout << "#" << i + 1 << "\n";
+			cout << "#" << i << "\n";
 			display(infoAppoints[i]);
 			cout << "\n";
 		}
