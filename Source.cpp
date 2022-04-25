@@ -51,17 +51,21 @@ void display(date someDate);
 //patient functions
 int patientLogin();
 void patientReg();
+void editPatientInfo(patient infoPatients[], int patientIndex);
 void displayPatientMenu(int i);
 void makeAppoint(appoint infoAppoints[], doc infoDocs[], int patientIndex);
-void viewAppoints(appoint infoAppoints[], patient infoPatients[], int patientIndex);
+void patientViewAppoints(appoint infoAppoints[], patient infoPatients[], int patientIndex);
 void editAppoint(appoint infoAppoints[], int patientIndex);
 void cancelAppoint(appoint infoAppoints[], int patientIndex);
 
 //doctor functions
 int docLogin();
 void docReg();
-void displayDocMenu(int i);
-
+void displayDocMenu(int docIndex);
+void editDocInfo(doc infoDocs[], int docIndex);
+void docViewAppoints(appoint infoAppoints[], doc infoDocs[], int docIndex);
+void addTime();
+void removeTime();
 
 int main() //start of main
 {
@@ -135,11 +139,11 @@ do {
 		{
 		case 1: //doc login
 
-			int i;
-			i = docLogin();
-			if (i != -1)
+			int docIndex;
+			docIndex = docLogin();
+			if (docIndex != -1)
 			{
-				displayDocMenu(i);
+				displayDocMenu(docIndex);
 			}
 			else
 				goto menu2;
@@ -245,6 +249,9 @@ int patientLogin()
 	}
 	cout << "\n Incorrect username or password! Please try again. \n\n";
 	return -1;
+
+
+
 }
 void displayPatientMenu(int patientIndex)
 {
@@ -257,7 +264,8 @@ void displayPatientMenu(int patientIndex)
 			<< "2 \t View my appointments \n"
 			<< "3 \t Edit an appointment\n"
 			<< "4 \t Cancel an appointment\n"
-			<< "5 \t Logout\n\n"
+			<< "5 \t Edit personal info\n\n"
+			<< "6 \t Logout\n\n"
 			<< "Selection: ";
 		int selection;
 		cin >> selection;
@@ -267,7 +275,7 @@ void displayPatientMenu(int patientIndex)
 			makeAppoint(infoAppoints, infoDocs, patientIndex);
 			break;
 		case 2: //view  my appointments
-			viewAppoints(infoAppoints, infoPatients, patientIndex);
+			patientViewAppoints(infoAppoints, infoPatients, patientIndex);
 			break;
 		case 3: //edit  an appointment
 			editAppoint(infoAppoints, patientIndex);
@@ -275,7 +283,10 @@ void displayPatientMenu(int patientIndex)
 		case 4: // cancel an appointment
 			cancelAppoint(infoAppoints, patientIndex);
 			break;
-		case 5: // logout
+		case 5: // edit personal info
+			editPatientInfo(infoPatients, patientIndex);
+			break;
+		case 6: // logout
 			cout << "Are you sure you want to log out? (y/n)";
 			cin >> choice;
 			break;
@@ -284,6 +295,10 @@ void displayPatientMenu(int patientIndex)
 		}
 
 	} while (choice != 'y' &&  choice != 'Y');
+}
+void editPatientInfo(patient infoPatients[], int patientIndex) // F1
+{
+	
 }
 void makeAppoint(appoint infoAppoints[], doc infoDocs[], int patientIndex)
 {
@@ -315,7 +330,7 @@ void makeAppoint(appoint infoAppoints[], doc infoDocs[], int patientIndex)
 	lastAppoint++;
 
 }
-void viewAppoints(appoint infoAppoints[], patient infoPatients[], int patientIndex)
+void patientViewAppoints(appoint infoAppoints[], patient infoPatients[], int patientIndex)
 {
 	for(int i=1; i<=lastAppoint; i++)
 	{ 
@@ -327,15 +342,15 @@ void viewAppoints(appoint infoAppoints[], patient infoPatients[], int patientInd
 		}
 	}
 }
-void editAppoint(appoint infoAppoints[], int patientIndex)
+void editAppoint(appoint infoAppoints[], int patientIndex) //F4
 {
 
 } 
-//incomplete
-void cancelAppoint(appoint infoAppoints[], int patientIndex)
+
+void cancelAppoint(appoint infoAppoints[], int patientIndex) //F5
 {
 }
-//incomplete
+
 
 //doc function declarations
 void docReg()
@@ -373,101 +388,61 @@ int docLogin()
 	cout << "\n Incorrect username or password! Please try again. \n\n";
 	return -1;
 }
-void displayDocMenu(int i)
+void displayDocMenu(int docIndex)
 {
-
-}
-
-/*
-void patientReg()
-{
-	fstream patient_file("Patient_data.txt", ios::app);
-
-	cout << "Enter username: \n";
-	cin >> username; 
-	patient_file << username << " ";
-
-	cout << "Enter password: ";
-	cin >> password;
-	patient_file << password << endl;
-
-	patient_file.close();
-}
-
-bool patientLogin() 
-{
-	string name, pass;
-	while (true)
+	char choice = 'n';
+	do
 	{
-		fstream patient_file("Patient_data.txt", ios::in);
-
-		cout << "Enter username: ";
-		cin >> name;
-
-		cout << "Enter password: ";
-		cin >> pass;
-
-		while (patient_file) 
+		cout << "\n**************************************************\n\n";
+		cout << "What would you like to do?\n\n"
+			<< "1 \t Add available time \n"
+			<< "2 \t Remove available time \n"
+			<< "3 \t View patients with appointments\n"
+			<< "4 \t Edit personal info\n"
+			<< "5 \t Logout\n\n"
+			<< "Selection: ";
+		int selection;
+		cin >> selection;
+		switch (selection)
 		{
-			patient_file >> username;
-			patient_file >> password;
-
-			if (name.compare(username) == 0) 
-			{
-				if (pass.compare(password) == 0) 
-				{
-					cout << "Logging successful ........ \n";
-					return true;
-				}
-			}
+		case 1: //Add available time
+			addTime();
+			break;
+		case 2: //Remove available time
+			removeTime();
+			break;
+		case 3: //View patients with appointments
+			docViewAppoints(infoAppoints, infoDocs, docIndex);
+			break;
+		case 4: // Edit personal info
+			editDocInfo(infoDocs, docIndex);
+			break;
+		case 5: // logout
+			cout << "Are you sure you want to log out? (y/n)";
+			cin >> choice;
+			break;
+		default:
+			break;
 		}
-		cout << "Invalid username or password! Please try again.\n";
-		continue;
-	}
+
+	} while (choice != 'y' && choice != 'Y');
 }
 
-void docReg()
+void editDocInfo(doc infoDocs[], int docIndex) //F2
 {
-	fstream doc_file("Doc_data.txt", ios::app);
 
-	cout << "Enter username: \n";
-	cin >> username; 
-	doc_file << username << " ";
-
-	cout << "Enter password: ";
-	cin >> password;
-	doc_file << password << endl;
-
-	doc_file.close();
 }
 
-bool docLogin() 
+void docViewAppoints(appoint infoAppoints[], doc infoDocs[], int docIndex) //F3
 {
-	string name, pass;
 
-	while (true)
-	{
-		fstream doc_file("Doc_data.txt", ios::in);
-		cout << "Enter username: ";
-		cin >> name;
-		cout << "Enter password: ";
-		cin >> pass;
-		while (doc_file) 
-		{
-			doc_file >> username;
-			doc_file >> password;
-			if (name.compare(username) == 0) 
-			{
-				if (pass.compare(password) == 0) 
-				{
-					cout << "Logging successful ........ \n\n";
-					return true;
-				}
-			}
-		}
-		cout << "Invalid username or password! Please try again.\n\n";
-		continue;
-	}
+}
+void addTime() //F6
+{
+
+}
+void removeTime() //F7
+{
+
 }
 
-*/
