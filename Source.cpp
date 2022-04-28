@@ -298,7 +298,45 @@ void displayPatientMenu(int patientIndex)
 }
 void editPatientInfo(patient infoPatients[], int patientIndex) // F1
 {
-	
+	void editAppoint(appoint infoAppoints[], int patientIndex)
+{
+	int selection;
+	display(infoAppoints[patientIndex]); // dispalay before editing
+	cout << "Edit: \n"
+		<< "1. Doctor \n"
+		<< "2. Date \n"
+		<< "3. Time \n";
+	cin >> selection;
+	switch (selection) {
+	case 1:
+		cout << "Select doctor: \n";
+		for (int i = 1; i < lastDoc; i++)
+		{
+			cout << i << "\t" << infoDocs[i].name << "\n";
+		}
+		infoAppoints[patientIndex].appointPatient = infoPatients[patientIndex];
+		infoAppoints[patientIndex].appointDoc = infoDocs[selection - 1];
+		break;
+
+	case 2:
+		// working on it
+		break;
+	case 3:
+		cout << "Select time: \n";
+		for (int i = 0; i < 5; i++)
+		{
+			cout << i + 1 << "\t" << timeSlots[i] << "\n";
+		}
+		cout << "Selection: ";
+		cin >> selection;
+		selection--; // array things
+
+		infoAppoints[patientIndex].timeSlot = timeSlots[selection];
+		break;
+
+		display(infoAppoints[patientIndex]); //display after editing
+	}
+}
 }
 void makeAppoint(appoint infoAppoints[], doc infoDocs[], int patientIndex)
 {
