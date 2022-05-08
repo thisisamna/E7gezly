@@ -30,11 +30,12 @@ struct doc {
 	string name;
 } infoDocs[DOC_NUM];
 struct appoint {
+	string index;
 	patient appointPatient;
 	doc appointDoc;
 	date appointDate;
 	string timeSlot;
-}infoAppoints[APPOINT_NUM];
+}infoAppoints[APPOINT_NUM], newAppoint[1];
 
 //global variables
 int lastPatient = 1;
@@ -48,6 +49,11 @@ void chooseDate(appoint infoAppoints[], int i);
 void display(appoint appointment);
 void display(date someDate);
 
+//fstream functions
+void loadData(appoint infoAppoints[], patient infoPatients[], doc infoDocs[]);
+void saveData(appoint infoAppoints[], patient infoPatients[], doc infoDocs[]);
+
+
 //patient functions
 int patientLogin();
 void patientReg();
@@ -55,8 +61,8 @@ void editPatientInfo(patient infoPatients[], int patientIndex);
 void displayPatientMenu(int i);
 void makeAppoint(appoint infoAppoints[], doc infoDocs[], int patientIndex);
 void patientViewAppoints(appoint infoAppoints[], patient infoPatients[], int patientIndex);
-void editAppoint(appoint infoAppoints[], int patientIndex);
-void cancelAppoint(appoint infoAppoints[], int patientIndex);
+void editAppoint(appoint infoAppoints[], int appointIndex);
+void cancelAppoint(appoint infoAppoints[], int appointIndex);
 
 //doctor functions
 int docLogin();
@@ -203,6 +209,7 @@ void display(date someDate)
 }
 void display(appoint appointment)
 {
+	cout << "Index:" << appointment.index << "\n";
 	cout << "Patient:" << appointment.appointPatient.name <<"\n";
 	cout << "Doctor:" << appointment.appointDoc.name << "\n";
 	cout << "Date:";
@@ -278,10 +285,15 @@ void displayPatientMenu(int patientIndex)
 			patientViewAppoints(infoAppoints, infoPatients, patientIndex);
 			break;
 		case 3: //edit  an appointment
-			editAppoint(infoAppoints, patientIndex);
+			int appointIndex;
+			cout << "Enter the index of the appointmnet would you like to edit: \n";
+			appointIndex = selectAppoint(infoAppoints, infoPatients, patientIndex);
+			editAppoint(infoAppoints, appointIndex);
 			break;
 		case 4: // cancel an appointment
-			cancelAppoint(infoAppoints, patientIndex);
+			cout << "Enter the index of the appointmnet would you like to cancel: \n";
+			appointIndex = selectAppoint(infoAppoints, infoPatients, patientIndex);
+			cancelAppoint(infoAppoints, appointIndex);
 			break;
 		case 5: // edit personal info
 			editPatientInfo(infoPatients, patientIndex);
@@ -296,9 +308,61 @@ void displayPatientMenu(int patientIndex)
 
 	} while (choice != 'y' &&  choice != 'Y');
 }
-void editPatientInfo(patient infoPatients[], int patientIndex) // F1 // i think i made a mistake here welp 
+
+void editPatientInfo(patient infoPatients[], int patientIndex) 
 {
+		cout << "\n**************************************************\n\n";
+		cout << "Enter your password to continue: ";
+		string password;
+		cin >> password;
+		if (password == infoPatients[patientIndex].password)
+		{
+			cout << "What would you like to edit?\n\n"
+				<< "1 \t Username \n"
+				<< "2 \t Password \n" //request old password
+				<< "3 \t Name \n"
+				<< "4 \t Age\n"
+				<< "5 \t Previous menu\n\n" //incomplete
+				<< "Selection: ";
+
+			int selection;
+			cin >> selection;
+			switch (selection)
+			{
+			case 1: //Username
+				cout << "Update username: ";
+				cin >> infoPatients[patientIndex].username;
+				cout << "Successfully updated!";
+				break;
+			case 2: //Password
+				cout << "Update password: ";
+				cin >> infoPatients[patientIndex].password;
+				cout << "Successfully updated!";
+				break;
+			case 3: //Name
+				cout << "Update name: ";
+				cin >> infoPatients[patientIndex].name;
+				cout << "Successfully updated!";
+				break;
+			case 4: // Age
+				cout << "Update age: ";
+				cin >> infoPatients[patientIndex].age;
+				cout << "Successfully updated!";
+				break;
+			case 5: //Previous menu
+				break;
+			default:
+				break;
+			}
+			cout << "Successfully updated! \n";
+		}
+		else
+		{
+			cout << "Wrong password--edit failed. \n";
+		}
+
 }
+
 void makeAppoint(appoint infoAppoints[], doc infoDocs[], int patientIndex)
 {
 	int selection;
@@ -312,6 +376,7 @@ void makeAppoint(appoint infoAppoints[], doc infoDocs[], int patientIndex)
 	cin >> selection;
 
 	int i = lastAppoint;
+	infoAppoints[i].index = i;
 	infoAppoints[i].appointPatient = infoPatients[patientIndex];
 	infoAppoints[i].appointDoc = infoDocs[selection - 1];
 	chooseDate(infoAppoints, i);
@@ -331,74 +396,74 @@ void makeAppoint(appoint infoAppoints[], doc infoDocs[], int patientIndex)
 }
 void patientViewAppoints(appoint infoAppoints[], patient infoPatients[], int patientIndex)
 {
+	int counter = 1;
 	for(int i=1; i<=lastAppoint; i++)
 	{ 
 		if (infoAppoints[i].appointPatient.id == infoPatients[patientIndex].id)
 		{
-			cout << "#" << i << "\n";
+			cout << "#" << counter  << "\n";
 			display(infoAppoints[i]);
 			cout << "\n";
+			counter++;
 		}
 	}
 }
-void editAppoint(appoint infoAppoints[], int patientIndex) //F4
-{
-	int selection;
-	display(infoAppoints[patientIndex]); // dispalay before editing
-	cout << "Edit: \n"
-		<< "1. Doctor \n"
-		<< "2. Date \n"
-		<< "3. Time \n";
-	cin >> selection;
-	switch (selection) {
-	case 1:
-		cout << "Select doctor: \n";
-		for (int i = 1; i < lastDoc; i++)
-		{
-			cout << i << "\t" << infoDocs[i].name << "\n";
-		}
-		infoAppoints[patientIndex].appointPatient = infoPatients[patientIndex];
-		infoAppoints[patientIndex].appointDoc = infoDocs[selection - 1];
-		break;
 
-	case 2:
-		// working on it
-		break;
-	case 3:
+int selectAppoint(appoint infoAppoints[], patient infoPatients[], int patientIndex)
+{
+	int appointIndex;
+	patientViewAppoints(infoAppoints, infoPatients, patientIndex);
+	cin >> appointIndex;
+	return appointIndex;
+}
+void editAppoint(appoint infoAppoints[], int appointIndex) 
+{
+	display(infoAppoints[appointIndex]); // dispalay before editing
+
+	cout << "You are editing your appointment's date and time... \n";
+		cout << "Enter new date: ";
+		chooseDate(newAppoint, 1);
+
 		cout << "Select time: \n";
 		for (int i = 0; i < 5; i++)
 		{
 			cout << i + 1 << "\t" << timeSlots[i] << "\n";
 		}
+		int selection;
 		cout << "Selection: ";
 		cin >> selection;
-		selection--; // array things
+		selection--; // correct array index
 
-		infoAppoints[patientIndex].timeSlot = timeSlots[selection];
-		break;
+		bool available = true;
+		
+		for (int i = 0; i <= lastAppoint; i++)
+		{
+			if (newAppoint[1].appointDate.day == infoAppoints[i].appointDate.day)
+				if (newAppoint[1].appointDate.month == infoAppoints[i].appointDate.month)
+					if (newAppoint[1].appointDate.year == infoAppoints[i].appointDate.year)
+						if (newAppoint[1].timeSlot == infoAppoints[i].timeSlot)
+							available = false;
+		}
 
-		display(infoAppoints[patientIndex]); //display after editing
-	}
 
+		if (available)
+		{
+			infoAppoints[appointIndex].appointDate.day = newAppoint[1].appointDate.day;
+			infoAppoints[appointIndex].appointDate.month = newAppoint[1].appointDate.month;
+			infoAppoints[appointIndex].appointDate.year = newAppoint[1].appointDate.year;
+			infoAppoints[appointIndex].timeSlot = timeSlots[selection];
+			cout << "Updated successfully!";
+
+		}
+		else
+			cout << "Sorry. The changes you made aren't available.";
+	
+	display(infoAppoints[appointIndex]); //display after editing
+	
 } 
 
-void cancelAppoint(appoint infoAppoints[], int patientIndex) //F5
+void cancelAppoint(appoint infoAppoints[], int appointIndex) //F5 on github
 {
-	for (lastAppoint; lastAppoint >= patientIndex; lastAppoint--) {
-			infoAppoints[lastAppoint] = infoAppoints[lastAppoint - 1];
-	}
-	lastAppoint--;
-
-	// to check
-	for (int j = 0; j <= lastAppoint; j++) {
-		for (int i = 0; i <= lastAppoint; i++) {
-			{
-					cout << "#" << i << "\n";
-					display(infoAppoints[i]);
-					cout << "\t";
-			}
-		}
-	}
 }
 
 
@@ -417,6 +482,7 @@ void docReg()
 
 	lastDoc++;
 }
+
 int docLogin()
 {
 	string username, password;
@@ -461,7 +527,7 @@ void displayDocMenu(int docIndex)
 		case 2: //Remove available time
 			removeTime();
 			break;
-		case 3: //View patients with appointments
+		case 3: //View Docs with appointments
 			docViewAppoints(infoAppoints, infoDocs, docIndex);
 			break;
 		case 4: // Edit personal info
@@ -478,14 +544,65 @@ void displayDocMenu(int docIndex)
 	} while (choice != 'y' && choice != 'Y');
 }
 
-void editDocInfo(doc infoDocs[], int docIndex) //F2
+void editDocInfo(doc infoDocs[], int docIndex) 
 {
 
+	cout << "\n**************************************************\n\n";
+	cout << "Enter your password to continue: ";
+	string password;
+	cin >> password;
+	if (password == infoDocs[docIndex].password)
+	{
+		cout << "What would you like to edit?\n\n"
+			<< "1 \t Username \n"
+			<< "2 \t Password \n" //request old password
+			<< "3 \t Name \n"
+			<< "4 \t Previous menu\n\n" //incomplete
+			<< "Selection: ";
+
+		int selection;
+		cin >> selection;
+		switch (selection)
+		{
+		case 1: //Username
+			cout << "Update username: ";
+			cin >> infoDocs[docIndex].username;
+			break;
+		case 2: //Password
+			cout << "Update password: ";
+			cin >> infoDocs[docIndex].password;
+			break;
+		case 3: //Name
+			cout << "Update name: ";
+			cin >> infoDocs[docIndex].name;
+			break;
+		case 4: //Previous menu
+			break;
+		default:
+			break;
+		}
+		cout << "Successfully updated! \n";
+	}
+	else
+	{
+		cout << "Wrong password--edit failed. \n";
+	}
+	
 }
 
-void docViewAppoints(appoint infoAppoints[], doc infoDocs[], int docIndex) //F3
+void docViewAppoints(appoint infoAppoints[], doc infoDocs[], int docIndex) 
 {
-
+	for (int i = 1; i <= lastAppoint; i++)
+	{
+		int counter = 1;
+		if (infoAppoints[i].appointDoc.id == infoDocs[docIndex].id)
+		{
+			cout << "#" << counter << "\n";
+			display(infoAppoints[i]);
+			cout << "\n";
+			counter++;
+		}
+	}
 }
 void addTime() //F6
 {
@@ -496,3 +613,13 @@ void removeTime() //F7
 
 }
 
+void loadData(appoint infoAppoints[], patient infoPatients[], doc infoDocs[])
+{
+
+}
+
+
+void saveData(appoint infoAppoints[], patient infoPatients[], doc infoDocs[])
+{
+
+}
