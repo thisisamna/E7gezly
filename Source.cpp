@@ -9,7 +9,6 @@ const int PATIENT_NUM=10;
 const int DATE_NUM = 10;
 const int APPOINT_NUM = 10;
 
-
 //structure types
 struct date {
 	int day;
@@ -43,7 +42,6 @@ int lastDoc = 1;
 int lastAppoint = 1;
 string timeSlots[5] = { "09:00 - 10:00","10:00 - 11:00","11:00 - 12:00","12:00 - 01:00","01:00 - 02:00" };
 
-
 //gen functions 
 void chooseDate(appoint infoAppoints[], int i);
 void display(appoint appointment);
@@ -61,6 +59,7 @@ void editPatientInfo(patient infoPatients[], int patientIndex);
 void displayPatientMenu(int i);
 void makeAppoint(appoint infoAppoints[], doc infoDocs[], int patientIndex);
 void patientViewAppoints(appoint infoAppoints[], patient infoPatients[], int patientIndex);
+int selectAppoint(appoint infoAppoints[], patient infoPatients[], int patientIndex);
 void editAppoint(appoint infoAppoints[], int appointIndex);
 void cancelAppoint(appoint infoAppoints[], int appointIndex);
 
@@ -84,7 +83,6 @@ int main() //start of main
 
 	menu2: //main menu
 do {
-
 	cout << "Are you a patient or doctor?\n\n"
 		<< "1 \t Patient \n"
 		<< "2 \t Doctor\n\n"
@@ -230,7 +228,6 @@ void patientReg()
 	cin >> infoPatients[lastPatient].username;
 	cout << "Enter password: ";
 	cin >> infoPatients[lastPatient].password;
-
 
 	lastPatient++;
 }
@@ -462,15 +459,19 @@ void editAppoint(appoint infoAppoints[], int appointIndex)
 	
 } 
 
-void cancelAppoint(appoint infoAppoints[], int appointIndex) //F5 on github
+void cancelAppoint(appoint infoAppoints[], int appointIndex) 
 {
+	for (lastAppoint; lastAppoint >= appointIndex; lastAppoint--)
+	{
+		infoAppoints[lastAppoint - 1] = infoAppoints[lastAppoint];
+	}
+	lastAppoint--;
 }
 
 
 //doc function declarations
 void docReg()
 {
-
 	cout << "Enter name: ";
 	cin >> infoDocs[lastDoc].name;
 
