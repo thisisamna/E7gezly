@@ -17,20 +17,20 @@ struct date {
 	int year;
 }dates[DATE_NUM];
 struct patient {
-	int id;
+	string id;
 	string username;
 	string password;
 	string name;
-	int age;
+	string age;
 } infoPatients[PATIENT_NUM];
 struct doc {
-	int id;
+	string id;
 	string username;
 	string password;
 	string name;
 } infoDocs[DOC_NUM];
 struct appoint {
-	int index;
+	string index;
 	string patientUsername;
 	string patientName;
 	string docUsername;
@@ -78,6 +78,8 @@ void removeTime();
 
 int main() //start of main
 {
+	loadData(infoAppoints, infoPatients, infoDocs);
+
 	menu1:
 	cout << "\n**************************************************\n\n"
 		<< "************** Welcome to E7gezly **************\n"
@@ -250,6 +252,7 @@ void patientReg()
 	cout << "Enter password: ";
 	cin >> infoPatients[lastPatient].password;
 }
+
 int patientLogin()
 {
 	string username, password;
@@ -258,7 +261,7 @@ int patientLogin()
 	cout << "Enter password: ";
 	cin >> password;
 
-	for (int i = 1; i < PATIENT_NUM; i++)
+	for (int i = 0; i <=lastPatient; i++)
 	{
 		if (username == infoPatients[i].username)
 		{
@@ -526,7 +529,7 @@ int docLogin()
 	cout << "Enter password: ";
 	cin >> password;
 
-	for (int i=0; i<DOC_NUM; i++)
+	for (int i=0; i<=lastDoc; i++)
 	{
 		if (username == infoDocs[i].username)
 		{
@@ -651,9 +654,11 @@ void removeTime() //F7
 void loadData(appoint infoAppoints[], patient infoPatients[], doc infoDocs[])
 {
 
+	
 }
 
 
 void saveData(appoint infoAppoints[], patient infoPatients[], doc infoDocs[])
 {
+
 }
