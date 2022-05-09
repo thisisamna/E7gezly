@@ -41,15 +41,15 @@ int lastDoc = 1;
 int lastAppoint = 1;
 string timeSlots[5] = { "09:00 - 10:00","10:00 - 11:00","11:00 - 12:00","12:00 - 01:00","01:00 - 02:00" };
 string extraTime[4] = { "02:00 - 03:00", "03:00 - 04:00", "04:00 - 05:00", "05:00 - 06:00" };
-string timeCombined[9] = { "     " ,"     " ,"     " ,"     " ,"     " ,"     " ,"     " ,"     " ,"     " };
-bool chosenTime[4] = { false, false, false, false }; 
+string timeCombined[9] = { "     " ,"     " ,"     " ,"     " ,"     " ,"     " ,"     " ,"     " ,"     " }; //to combine timeslots & extraTime;
+bool chosenTime[4] = { false, false, false, false }; // default to false / dont display to patient unless its true;
 
 
 //gen functions 
 void chooseDate(appoint infoAppoints[], int i);
 void display(appoint appointment);
 void display(date someDate);
-void displayTime();
+void displayTime(); // for loop to dispaly timeslots
 
 //patient functions
 int patientLogin();
@@ -60,7 +60,7 @@ void makeAppoint(appoint infoAppoints[], doc infoDocs[], int patientIndex);
 void patientViewAppoints(appoint infoAppoints[], patient infoPatients[], int patientIndex);
 void editAppoint(appoint infoAppoints[], int patientIndex);
 void cancelAppoint(appoint infoAppoints[], int patientIndex);
-void displayTimePatient();
+void displayTimePatient(); // dispaly time to patient (time slots and extraTime)
 
 //doctor functions
 int docLogin();
@@ -68,7 +68,7 @@ void docReg();
 void displayDocMenu(int docIndex);
 void editDocInfo(doc infoDocs[], int docIndex);
 void docViewAppoints(appoint infoAppoints[], doc infoDocs[], int docIndex);
-void displayExtraTimesDr();
+void displayExtraTimesDr(); // display extraTime to doctor ONLY; to add time
 void addTime();
 void removeTime();
 
@@ -322,7 +322,7 @@ void makeAppoint(appoint infoAppoints[], doc infoDocs[], int patientIndex)
 	chooseDate(infoAppoints, i);
 
 	cout << "Select time: \n";
-	displayTimePatient();
+	displayTimePatient(); // the only change in this function;
 	cout << "Selection: ";
 	cin >> selection;
 	selection--;
@@ -333,10 +333,10 @@ void makeAppoint(appoint infoAppoints[], doc infoDocs[], int patientIndex)
 }
 void displayTimePatient() // to display removed and added time;
 {
-	int e = 1; //for exstra time
+	int e = 1; //for extra time // i forgot whyy lol but lets keep it 1 for now :)
 
 	for (int i = 0; i < 5; i++) {
-		if (timeSlots[i] == "     ") {
+		if (timeSlots[i] == "     ") { 
 			break;
 		}
 		else {
@@ -347,7 +347,7 @@ void displayTimePatient() // to display removed and added time;
 	}
 
 	for (int i = 0; i < 4; i++) {
-		if (chosenTime[i]) {
+		if (chosenTime[i]) { // chosen time is true when dr add time;
 			if (extraTime[i] == "     ")
 				break;
 			else {
@@ -357,10 +357,10 @@ void displayTimePatient() // to display removed and added time;
 		}
 	}
 
-	cout << "\nThis is for checking: \n";
+	/*cout << "\nThis is for checking: \n";
 	for (int m = 0; m < 9; m++) {
 		cout << m + 1 << "\t" << timeCombined[m] << "\n";
-	}
+	}*/
 
 	
 }
@@ -378,43 +378,6 @@ void patientViewAppoints(appoint infoAppoints[], patient infoPatients[], int pat
 }
 void editAppoint(appoint infoAppoints[], int patientIndex) //F4
 {
-	int selection;
-	display(infoAppoints[patientIndex]); // dispalay before editing
-	cout << "Edit: \n"
-		<< "1. Doctor \n"
-		<< "2. Date \n"
-		<< "3. Time \n";
-	cin >> selection;
-	switch (selection) {
-	case 1:
-		cout << "Select doctor: \n";
-		for (int i = 1; i < lastDoc; i++)
-		{
-			cout << i << "\t" << infoDocs[i].name << "\n";
-		}
-		infoAppoints[patientIndex].appointPatient = infoPatients[patientIndex];
-		infoAppoints[patientIndex].appointDoc = infoDocs[selection - 1];
-		break;
-
-	case 2:
-		// working on it
-		break;
-	case 3:
-		cout << "Select time: \n";
-		for (int i = 0; i < 5; i++)
-		{
-			cout << i + 1 << "\t" << timeSlots[i] << "\n";
-		}
-		cout << "Selection: ";
-		cin >> selection;
-		selection--; // array things
-
-		infoAppoints[patientIndex].timeSlot = timeSlots[selection];
-		break;
-
-		display(infoAppoints[patientIndex]); //display after editing
-	}
-
 }
 void cancelAppoint(appoint infoAppoints[], int patientIndex) //F5
 {
