@@ -653,12 +653,125 @@ void removeTime() //F7
 
 void loadData(appoint infoAppoints[], patient infoPatients[], doc infoDocs[])
 {
+	ifstream infoFile("info.txt");
+	if (infoFile.is_open())
+	{
+		infoFile >> lastPatient >> lastDoc >> lastAppoint;
+		infoFile.close();
+	}
+	else
+		cout << "Unable to open info file";
 
+	int i;
+	string line;
+
+	ifstream patientFile("patients.txt");
+	i = -1;
+	if (patientFile.is_open())
+	{
+		while (getline(patientFile, line, '\t'))
+		{
+			i++;
+			infoPatients[i].id=i; //getline ignores first character so i dealt with it alone
+
+			patientFile 
+				>> infoPatients[i].name
+				>> infoPatients[i].age
+				>> infoPatients[i].username
+				>> infoPatients[i].password;
+		}
+		patientFile.close();
+	}
+	else 
+		cout << "Unable to open patient file";
+
+	ifstream docFile("doctors.txt");
+	i = -1;
+	if (docFile.is_open())
+	{
+		while (getline(docFile, line, '\t'))
+		{
+			i++;
+			infoDocs[i].id = i; //getline ignores first character so i dealt with it alone
+
+			docFile
+				>> infoDocs[i].name
+				>> infoDocs[i].username
+				>> infoDocs[i].password;
+		}
+		docFile.close();
+	}
+	else
+		cout << "Unable to open doc file";
+
+	ifstream appointFile("appointments.txt");
+	i = -1;
+	if (appointFile.is_open())
+	{
+		while (getline(appointFile, line, '\t'))
+		{
+			i++;
+			infoAppoints[i].index = i; //getline ignores first character so i dealt with it alone
+
+			appointFile
+				>> infoAppoints[i].patientUsername
+				>> infoAppoints[i].docUsername
+				>> infoAppoints[i].timeSlot
+				>> infoAppoints[i].appointDate.day
+				>> infoAppoints[i].appointDate.month 
+				>> infoAppoints[i].appointDate.year;
+		}
+		appointFile.close();
+	}
+	else
+		cout << "Unable to open doctor file";
 	
 }
 
 
 void saveData(appoint infoAppoints[], patient infoPatients[], doc infoDocs[])
 {
+	ofstream infoFile;
+	infoFile.open("info.txt");
+	infoFile << lastPatient << endl
+		<< lastDoc << endl
+		<< lastAppoint << endl;
+	infoFile.close();
 
+	ofstream patientFile;
+	patientFile.open("patients.txt");
+	for (int i = 0; i <= lastPatient; i++)
+	{
+		patientFile << infoPatients[i].id << "\t"
+			<< infoPatients[i].name << "\t"
+			<< infoPatients[i].age << "\t"
+			<< infoPatients[i].username << "\t"
+			<< infoPatients[i].password << "\n";
+	}
+	patientFile.close();
+
+	ofstream docFile;
+	docFile.open("doctors.txt");
+	for (int i = 0; i <= lastDoc; i++)
+	{
+		docFile << infoDocs[i].id << "\t"
+			<< infoDocs[i].name << "\t"
+			<< infoDocs[i].username << "\t"
+			<< infoDocs[i].password << "\n";
+	}
+	docFile.close();
+
+	ofstream appointFile;
+	appointFile.open("appointments.txt");
+	for (int i = 0; i <= lastAppoint; i++)
+	{
+		appointFile << infoAppoints[i].index << "\t"
+			<< infoAppoints[i].patientUsername << "\t"
+			<< infoAppoints[i].docUsername << "\t"
+			<< infoAppoints[i].timeSlot << "\t"
+			<< infoAppoints[i].appointDate.day << " "
+			<< infoAppoints[i].appointDate.month << " "
+			<< infoAppoints[i].appointDate.year << "\n";
+	}
+	appointFile.close();
 }
