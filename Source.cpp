@@ -77,6 +77,7 @@ void editDocInfo(doc infoDocs[], int docIndex);
 void docViewAppoints(appoint infoAppoints[], doc infoDocs[], int docIndex);
 void addTime(string timeSlots[][TIME_NUM], int docIndex, int lastDocTime);
 void removeTime(string timeSlots[][TIME_NUM], int docIndex, int lastDocTime);
+void editTime(string timeSlots[][TIME_NUM], int docIndex);
 void clearAppointHistory(); //Missing f
 
 int main() //start of main
@@ -95,7 +96,8 @@ menu2: //main menu
 
 		cout << "Are you a patient or doctor?\n\n"
 			<< "1 \t Patient \n"
-			<< "2 \t Doctor\n\n"
+			<< "2 \t Doctor\n"
+			<< "3 \t Exit\n\n"
 			<< "Selection: ";
 
 		int userMode;
@@ -170,7 +172,8 @@ menu2: //main menu
 				break;
 			}
 			break;
-
+		case 3:
+			break;
 		default:
 			cout << "Please enter a valid choice!";
 		}
@@ -179,7 +182,7 @@ menu2: //main menu
 			<< "1 \t Main menu \n"
 			<< "2 \t Exit \n\n"
 			<< "Selection: ";
-
+		exit: //main menu exit option
 		cin >> status;
 
 	} while (status != 2);
@@ -326,43 +329,44 @@ void displayPatientMenu(int patientIndex)
 	{
 		cout << "\n**************************************************\n\n";
 		cout << "What would you like to do?\n\n"
-			<< "0 \t Find doctors \n"
-			<< "1 \t Make an appointment \n"
-			<< "2 \t View my appointments \n"
-			<< "3 \t Edit an appointment\n"
-			<< "4 \t Cancel an appointment\n"
-			<< "5 \t Edit personal info\n"
-			<< "6 \t Logout\n\n"
+			<< "1 \t Find doctors \n"
+			<< "2 \t Make an appointment \n"
+			<< "3 \t View my appointments \n"
+			<< "4 \t Edit an appointment\n"
+			<< "5 \t Cancel an appointment\n"
+			<< "6 \t Edit personal info\n"
+			<< "7 \t Logout\n\n"
 			<< "Selection: ";
 		int selection;
 		cin >> selection;
 		switch (selection)
 		{
-		case 0: //find doctors
+		case 1: //find doctors
 			cout << "Doctors available for consultations: \n";
 			viewDocs();
+			cout << "\n";
 			break;
-		case 1: //make an appointment
+		case 2: //make an appointment
 			makeAppoint(infoAppoints, infoDocs, patientIndex);
 			break;
-		case 2: //view  my appointments
+		case 3: //view  my appointments
 			patientViewAppoints(infoAppoints, infoPatients, patientIndex);
 			break;
-		case 3: //edit  an appointment
+		case 4: //edit  an appointment
 			int appointIndex;
 			cout << "Enter the index of the appointmnet would you like to edit: \n";
 			appointIndex = selectAppoint(infoAppoints, infoPatients, patientIndex);
 			editAppoint(infoAppoints, appointIndex);
 			break;
-		case 4: // cancel an appointment
+		case 5: // cancel an appointment
 			cout << "Enter the index of the appointmnet would you like to cancel: \n";
 			appointIndex = selectAppoint(infoAppoints, infoPatients, patientIndex);
 			cancelAppoint(infoAppoints, appointIndex);
 			break;
-		case 5: // edit personal info
+		case 6: // edit personal info
 			editPatientInfo(infoPatients, patientIndex);
 			break;
-		case 6: // logout
+		case 7: // logout
 			cout << "Are you sure you want to log out? (y/n)";
 			cin >> choice;
 			break;
@@ -419,7 +423,6 @@ void editPatientInfo(patient infoPatients[], int patientIndex)
 		default:
 			break;
 		}
-		cout << "Successfully updated! \n";
 	}
 	else
 	{
@@ -608,30 +611,37 @@ void displayDocMenu(int docIndex)
 	{
 		cout << "\n**************************************************\n\n";
 		cout << "What would you like to do?\n\n"
-			<< "1 \t Add available time \n"
-			<< "2 \t Remove available time \n"
-			<< "3 \t View patients with appointments\n"
-			<< "4 \t Edit personal info\n"
-			<< "5 \t Logout\n\n"
+			<<"1 \t Edit available time"
+			<< "2 \t Add available time \n"
+			<< "3 \t Remove available time \n"
+			<< "4 \t View patients with appointments\n"
+			<< "5 \t Edit personal info\n"
+			<< "6 \t Clear appointment history\n"
+			<< "7 \t Logout\n\n"
 			<< "Selection: ";
 		int selection;
 		cin >> selection;
 		cout << "\n**************************************************\n\n";
 		switch (selection)
 		{
-		case 1: //Add available time
+		case 1: //Edit available time
+			editTime(timeSlots, docIndex);
+
+		case 2: //Add available time
 			addTime(timeSlots, docIndex, infoDocs[docIndex].docLastTime);
 			break;
-		case 2: //Remove available time
+		case 3: //Remove available time
 			removeTime(timeSlots, docIndex, infoDocs[docIndex].docLastTime);
 			break;
-		case 3: //View Patients with appointments
+		case 4: //View Patients with appointments
 			docViewAppoints(infoAppoints, infoDocs, docIndex);
 			break;
-		case 4: // Edit personal info
+		case 5: // Edit personal info
 			editDocInfo(infoDocs, docIndex);
 			break;
-		case 5: // logout
+		case 6: //Clear appointment history
+			break;
+		case 7: // Logout
 			cout << "Are you sure you want to log out? (y/n)";
 			cin >> choice;
 			break;
@@ -708,9 +718,9 @@ void addTime(string timeSlots[][TIME_NUM], int docIndex, int lastDocTime)
 		lastDocTime++;
 
 		string startTime, endTime;
-		cout << "Enter time to start: (";
+		cout << "Enter time to start: (HH:MM)";
 		cin >> startTime;
-		cout << "Enter time to end: ";
+		cout << "Enter time to end: (HH:MM)";
 		cin >> endTime;
 
 		string time;
@@ -724,16 +734,23 @@ void addTime(string timeSlots[][TIME_NUM], int docIndex, int lastDocTime)
 }
 void removeTime(string timeSlots[][TIME_NUM], int docIndex, int lastDocTime) //F7
 {
-	int selection;
 	cout << "Choose time to delete: \n";
-	displayTimeSlots(docIndex); //orginal time aka timeSlots
+	displayTimeSlots(docIndex); 
+	int selection;
 	cin >> selection;
 	for (int i = selection-1; i < 9; i++) 
 	{
 		timeSlots[docIndex][i] = timeSlots[docIndex][i + 1];
 	}
 	lastDocTime--;
-
+}
+void editTime(string timeSlots[][TIME_NUM], int docIndex)
+{//here
+	cout << "Choose time to edit: \n";
+	displayTimeSlots(docIndex); 
+	int selection;
+	cin >> selection;
+	addTime(timeSlots, docIndex, selection-2); //to offest increment in the start of the function
 }
 
 void clearAppointHistory()
@@ -834,7 +851,6 @@ void loadData(appoint infoAppoints[], patient infoPatients[], doc infoDocs[])
 		cout << "Unable to open doctor file";
 
 }
-
 
 void saveData(appoint infoAppoints[], patient infoPatients[], doc infoDocs[])
 {
