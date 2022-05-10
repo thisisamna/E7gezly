@@ -33,23 +33,20 @@ struct appoint {
 	doc appointDoc;
 	date appointDate;
 	string timeSlot;
-}infoAppoints[APPOINT_NUM];
+} infoAppoints[APPOINT_NUM];
 
 //global variables
 int lastPatient = 1;
 int lastDoc = 1;
 int lastAppoint = 1;
-string timeSlots[5] = { "09:00 - 10:00","10:00 - 11:00","11:00 - 12:00","12:00 - 01:00","01:00 - 02:00" };
-string extraTime[4] = { "02:00 - 03:00", "03:00 - 04:00", "04:00 - 05:00", "05:00 - 06:00" };
-string timeCombined[9] = { "     " ,"     " ,"     " ,"     " ,"     " ,"     " ,"     " ,"     " ,"     " }; //to combine timeslots & extraTime;
-bool chosenTime[4] = { false, false, false, false }; // default to false / dont display to patient unless its true;
-
+string LastDoc;
+string doctorsTime[DOC_NUM][9] = { };
 
 //gen functions 
 void chooseDate(appoint infoAppoints[], int i);
 void display(appoint appointment);
 void display(date someDate);
-void displayTime(); // for loop to dispaly timeslots
+void displayTime(int docIndex);
 
 //patient functions
 int patientLogin();
@@ -60,7 +57,7 @@ void makeAppoint(appoint infoAppoints[], doc infoDocs[], int patientIndex);
 void patientViewAppoints(appoint infoAppoints[], patient infoPatients[], int patientIndex);
 void editAppoint(appoint infoAppoints[], int patientIndex);
 void cancelAppoint(appoint infoAppoints[], int patientIndex);
-void displayTimePatient(); // dispaly time to patient (time slots and extraTime)
+void displayTimePatient();
 
 //doctor functions
 int docLogin();
@@ -68,9 +65,9 @@ void docReg();
 void displayDocMenu(int docIndex);
 void editDocInfo(doc infoDocs[], int docIndex);
 void docViewAppoints(appoint infoAppoints[], doc infoDocs[], int docIndex);
-void displayExtraTimesDr(); // display extraTime to doctor ONLY; to add time
-void addTime();
-void removeTime();
+void editAvailbleTime(int docIndex);
+void addTime(int docIndex);
+void removeTime(int docIndex);
 
 int main() //start of main
 {
@@ -183,9 +180,9 @@ menu2: //main menu
 
 //gen function declarations
 //
-void displayTime() {
-	for (int i = 0; i < 5; i++)
-		cout << i + 1 << "\t" << timeSlots[i] << "\n";
+void displayTime(int docIndex) {
+	for (int i = 0; i < 9; i++)
+		cout << i + 1 << "\t" << doctorsTime[docIndex][i] << "\n";
 }
 void chooseDate(appoint infoAppoints[], int i)
 {
@@ -197,12 +194,12 @@ void chooseDate(appoint infoAppoints[], int i)
 	cout << "Year: ";
 	cin >> infoAppoints[i].appointDate.year;
 }
-void chooseTimeSLot(appoint infoAppoints[], int i)
+/*void chooseTimeSLot(appoint infoAppoints[], int i)
 {
 	cout << "Select time: \n";
 	displayTime();
 	cout << "Selection: ";
-}
+}*/
 void display(date someDate)
 {
 	cout << someDate.day << "/" << someDate.month << "/" << someDate.year << "\n";
@@ -321,47 +318,19 @@ void makeAppoint(appoint infoAppoints[], doc infoDocs[], int patientIndex)
 	infoAppoints[i].appointDoc = infoDocs[selection - 1];
 	chooseDate(infoAppoints, i);
 
+	int docIndex = selection - 1;
 	cout << "Select time: \n";
-	displayTimePatient(); // the only change in this function;
+	displayTime(docIndex);
 	cout << "Selection: ";
 	cin >> selection;
 	selection--;
 
-	infoAppoints[i].timeSlot = timeCombined[selection];
+	infoAppoints[i].timeSlot = doctorsTime[docIndex][selection];
 	lastAppoint++;
 
 }
 void displayTimePatient() // to display removed and added time;
 {
-	int e = 1; //for extra time // i forgot whyy lol but lets keep it 1 for now :)
-
-	for (int i = 0; i < 5; i++) {
-		if (timeSlots[i] == "     ") { 
-			break;
-		}
-		else {
-			cout << i + 1 << "\t" << timeSlots[i] << "\n";
-			timeCombined[e-1] = timeSlots[i]; // e-1 to start from zero
-			e++;
-		}
-	}
-
-	for (int i = 0; i < 4; i++) {
-		if (chosenTime[i]) { // chosen time is true when dr add time;
-			if (extraTime[i] == "     ")
-				break;
-			else {
-				timeCombined[e-1] = extraTime[i];
-				cout << e++ << "\t" << extraTime[i] << "\n";
-			}
-		}
-	}
-
-	/*cout << "\nThis is for checking: \n";
-	for (int m = 0; m < 9; m++) {
-		cout << m + 1 << "\t" << timeCombined[m] << "\n";
-	}*/
-
 	
 }
 void patientViewAppoints(appoint infoAppoints[], patient infoPatients[], int patientIndex)
@@ -378,6 +347,34 @@ void patientViewAppoints(appoint infoAppoints[], patient infoPatients[], int pat
 }
 void editAppoint(appoint infoAppoints[], int patientIndex) //F4
 {
+	int selection;
+	display(infoAppoints[patientIndex]); // dispalay before editing
+	cout << "Edit: \n"
+		<< "1. Doctor \n"
+		<< "2. Date \n"
+		<< "3. Time \n";
+	cin >> selection;
+	switch (selection) {
+
+	case 2:
+		// working on it
+		break;
+	case 3:
+		cout << "Select time: \n";
+		for (int i = 0; i < 5; i++)
+		{
+			cout << i + 1 << "\t" << timeSlots[i] << "\n";
+		}
+		cout << "Selection: ";
+		cin >> selection;
+		selection--; // array things
+
+		infoAppoints[patientIndex].timeSlot = timeSlots[selection];
+		break;
+
+		display(infoAppoints[patientIndex]); //display after editing
+	}
+
 }
 void cancelAppoint(appoint infoAppoints[], int patientIndex) //F5
 {
@@ -402,6 +399,7 @@ void cancelAppoint(appoint infoAppoints[], int patientIndex) //F5
 //doc function declarations
 void docReg()
 {
+	LastDoc = to_string(lastDoc);
 
 	cout << "Enter name: ";
 	cin >> infoDocs[lastDoc].name;
@@ -444,6 +442,7 @@ void displayDocMenu(int docIndex)
 		cout << "What would you like to do?\n\n"
 			<< "1 \t Add available time \n"
 			<< "2 \t Remove available time \n"
+			<< "6 \t Edit available time \n"
 			<< "3 \t View patients with appointments\n"
 			<< "4 \t Edit personal info\n"
 			<< "5 \t Logout\n\n"
@@ -453,10 +452,10 @@ void displayDocMenu(int docIndex)
 		switch (selection)
 		{
 		case 1: //Add available time
-			addTime();
+			addTime(docIndex);
 			break;
 		case 2: //Remove available time
-			removeTime();
+			removeTime(docIndex);
 			break;
 		case 3: //View patients with appointments
 			docViewAppoints(infoAppoints, infoDocs, docIndex);
@@ -467,6 +466,9 @@ void displayDocMenu(int docIndex)
 		case 5: // logout
 			cout << "Are you sure you want to log out? (y/n)";
 			cin >> choice;
+			break;
+		case 6:
+			editAvailbleTime(docIndex);
 			break;
 		default:
 			break;
@@ -482,50 +484,63 @@ void docViewAppoints(appoint infoAppoints[], doc infoDocs[], int docIndex) //F3
 {
 	
 }
-void displayExtraTimesDr()
+
+void editAvailbleTime(int docIndex) 
 {
-	for (int j = 0; j < 4; j++) {
-		cout << j+1 << "\t" << extraTime[j] << "\n";
-	}
-	
+	int selection, startTime, endTime;
+	cout << "choose time to edit \n";
+	displayTime(docIndex);
+	cin >> selection;
+	selection--;
+
+	cout << doctorsTime[docIndex][selection];
+	cout << "enter time to start \n";
+	cin >> startTime;
+	cout << "enter time to end \n";
+	cin >> endTime;
+	string StartTime, EndTime;
+	StartTime = to_string(startTime);
+	EndTime = to_string(endTime);
+
+	string TIME;
+	TIME = StartTime + ":00 - " + EndTime + ":00";
+	doctorsTime[docIndex][selection] = TIME;
+
 }
-void addTime() //F6
+void addTime(int docIndex) //F6
 {
-	int selection;
 	char choice;
+	int i = 0;
 	do {
-		cout << "Select time: \n";
-		displayExtraTimesDr(); 
-		cout << "selection: ";  cin >> selection;
-		switch (selection) {
-		case 1:
-			chosenTime[0] = true; // if true display
-			break;
-		case 2:
-			chosenTime[1] = true;
-			break;
-		case 3:
-			chosenTime[2] = true;
-			break;
-		case 4:
-			chosenTime[3] = true;
-			break;
-		}
-		cout << "Do you want to choose another? (y/n) \n";
+		
+		int startTime, endTime;
+		cout << "enter time to start \n";
+		cin >> startTime;
+		cout << "enter time to end \n";
+		cin >> endTime;
+		string StartTime, EndTime;
+		StartTime = to_string(startTime);
+		EndTime = to_string(endTime);
+
+		string TIME;
+		TIME = StartTime + ":00 - " + EndTime + ":00";
+		doctorsTime[docIndex][i] = TIME;
+		i++;
+		cout << "Do you want to add another? (y/n) \n";
 		cin >> choice;
-	} while (choice == 'y' || choice == 'Y');
+	} while ((choice == 'y' || choice == 'Y') && (i<9));
 }
-void removeTime() //F7
+void removeTime(int docIndex) //F7
 {
 	int selection;
 	cout << "choose time to delete: \n";
-	displayTime(); //orginal time aka timeSlots
+	displayTime(docIndex); //orginal time aka timeSlots
 	cin >> selection;
 	selection = selection - 1;
 
-
-	for (int i = selection; i < 4; i++) {
-		timeSlots[i] = timeSlots[i + 1];
+	
+	for (int i = selection; i < 9; i++) {
+		doctorsTime[docIndex][i] = doctorsTime[docIndex][i + 1];
 	}
-	timeSlots[4] = "     ";
+	doctorsTime[docIndex][9] = "     ";
 }
