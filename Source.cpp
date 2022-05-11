@@ -178,7 +178,7 @@ menu2: //main menu
 		//exit login menu
 		cout << "\n**************************************************\n\n"
 			<< "Do you want to exit? \n\n"
-			<< "1 \t Go back to main menu \n"
+			<< "1 \t No, go back to main menu \n"
 			<< "2 \t Yes, exit \n\n"
 
 		<< "Selection: ";
@@ -588,8 +588,8 @@ int docLogin()
 		if (username == infoDocs[i].username)
 		{
 			if (password == infoDocs[i].password)
-				cout << "Hello, " << infoDocs[i].name << "! \n\n";
-			return i;
+				cout << "\n**************************************************\n\n"
+				<< "\nHello, " << infoPatients[i].name << "! \n\n";			return i;
 		}
 
 	}
@@ -865,13 +865,13 @@ void loadData(appoint infoAppoints[], patient infoPatients[], doc infoDocs[])
 
 void saveData(appoint infoAppoints[], patient infoPatients[], doc infoDocs[])
 {
-	ofstream infoFile;
-	infoFile.open("info.txt");
-	infoFile << lastPatient << " " << lastDoc << " "<<  lastAppoint;
+	// config file
+	ofstream infoFile("info.txt", ios::app);
+	infoFile << lastPatient << " " << lastDoc << " " << lastAppoint;
 	infoFile.close();
 
-	ofstream patientFile;
-	patientFile.open("patients.txt");
+	// patient file
+	ofstream patientFile("patients.txt", ios::app);
 	for (int i = 0; i <= lastPatient; i++)
 	{
 		patientFile << infoPatients[i].id << "\t"
@@ -882,8 +882,8 @@ void saveData(appoint infoAppoints[], patient infoPatients[], doc infoDocs[])
 	}
 	patientFile.close();
 
-	ofstream docFile;
-	docFile.open("doctors.txt");
+	// doctor file
+	ofstream docFile("doctors.txt", ios::app);
 	for (int i = 0; i <= lastDoc; i++)
 	{
 		docFile << infoDocs[i].id << "\t"
@@ -893,8 +893,8 @@ void saveData(appoint infoAppoints[], patient infoPatients[], doc infoDocs[])
 	}
 	docFile.close();
 
-	ofstream appointFile;
-	appointFile.open("appointments.txt");
+	// appointment file
+	ofstream appointFile("appointments.txt", ios::app);
 	for (int i = 0; i <= lastAppoint; i++)
 	{
 		appointFile << to_string(infoAppoints[i].index) << "\t"
