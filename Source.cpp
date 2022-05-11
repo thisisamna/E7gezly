@@ -50,12 +50,11 @@ string timeSlots[DOC_NUM][TIME_NUM] = {};
 void chooseDate(appoint infoAppoints[], int i);
 void display(appoint appointment);
 void display(date someDate);
-void displayTimeSlots(int docIndex);
+void displayTimeSlots(int docIndex, int docLastTime);
 
 //fstream functions
 void loadData(appoint infoAppoints[], patient infoPatients[], doc infoDocs[]);
 void saveData(appoint infoAppoints[], patient infoPatients[], doc infoDocs[]);
-
 
 //patient functions
 int patientLogin();
@@ -86,15 +85,14 @@ int main() //start of main
 
 menu1:
 	cout << "\n**************************************************\n\n"
-		<< "*************** Welcome to E7gezly ***************\n"
-		<< "\n**************************************************\n\n";
-
+		<< "*************** Welcome to E7gezly ***************\n";
 	int status;
 
 menu2: //main menu
 	do {
 
-		cout << "Are you a patient or doctor?\n\n"
+		cout << "\n**************************************************\n\n"
+			<< "Are you a patient or doctor?\n\n"
 			<< "1 \t Patient \n"
 			<< "2 \t Doctor\n"
 			<< "3 \t Exit\n\n"
@@ -142,7 +140,7 @@ menu2: //main menu
 
 		case 2: //doctor
 			cout
-				<< "\n"
+				<< "\n**************************************************\n\n"
 				<< "1 \t Login \n"
 				<< "2 \t Register\n"
 				<< "3 \t Previous menu\n\n"//incomplete 
@@ -172,22 +170,23 @@ menu2: //main menu
 				break;
 			}
 			break;
-		case 3:
+		case 3: // exit
 			break;
 		default:
 			cout << "Please enter a valid choice!";
 		}
 		//exit login menu
 		cout << "\n**************************************************\n\n"
-			<< "1 \t Main menu \n"
-			<< "2 \t Exit \n\n"
-			<< "Selection: ";
-		exit: //main menu exit option
+			<< "Do you want to exit? \n\n"
+			<< "1 \t Yes, exit \n"
+			<< "2 \t Go back to main menu \n\n"
+
+		<< "Selection: ";
 		cin >> status;
 
-	} while (status != 2);
+	} while (status != 1);
 	//exit main menu
-	cout << "\n******** Thank you for using E7gezly! ********\n";
+	cout << "\n********** Thank you for using E7gezly! **********\n";
 
 	//saveData(infoAppoints, infoPatients, infoDocs);
 
@@ -201,12 +200,12 @@ void chooseDate(appoint infoAppoints[], int i)
 	int temp;
 	while (true)
 	{
-		cout << "\nPlease enter date: \n"
+		cout << "\nPlease enter date: \n\n"
 			<< "Day: ";
 		cin >> temp;
 		if (temp<1 || temp>31)
 		{
-			cout << "Please enter a valid day! \n";
+			cout << "Please enter a valid day and try again! \n";
 			continue;
 		}
 		else
@@ -219,7 +218,7 @@ void chooseDate(appoint infoAppoints[], int i)
 		cin >> temp;
 		if (temp < 1 || temp>12)
 		{
-			cout << "Please enter a valid month! \n";
+			cout << "Please enter a valid month and try again! \n";
 			continue;
 		}
 		else
@@ -229,15 +228,16 @@ void chooseDate(appoint infoAppoints[], int i)
 
 		cout << "Year: ";
 		cin >> temp;
-		if (temp < 2022)
+		if (temp!=2022)
 		{
-			cout << "Please enter a valid year! \n";
+			cout << "Sorry--appointments can only be booked within the year! \n";
 			continue;
 		}
 		else
 		{
 			infoAppoints[i].appointDate.year = temp;
 		}
+		break;
 	}
 }
 void chooseTimeSLot(appoint infoAppoints[], int i)
@@ -265,7 +265,7 @@ void display(appoint appointment)
 	cout << "Time: " << appointment.timeSlot << "\n";
 }
 
-void displayTimeSlots(int docIndex)
+void displayTimeSlots(int docIndex, int docLastTime)
 {
 	for (int i = 0; i < 9; i++)
 		cout << i + 1 << "\t" << timeSlots[docIndex][i] << "\n";
@@ -611,7 +611,7 @@ void displayDocMenu(int docIndex)
 	{
 		cout << "\n**************************************************\n\n";
 		cout << "What would you like to do?\n\n"
-			<<"1 \t Edit available time"
+			<<"1 \t Edit available time \n" 
 			<< "2 \t Add available time \n"
 			<< "3 \t Remove available time \n"
 			<< "4 \t View patients with appointments\n"
@@ -718,16 +718,16 @@ void addTime(string timeSlots[][TIME_NUM], int docIndex, int lastDocTime)
 		lastDocTime++;
 
 		string startTime, endTime;
-		cout << "Enter time to start: (HH:MM)";
+		cout << "Enter time to start: (HH:MM)\n";
 		cin >> startTime;
-		cout << "Enter time to end: (HH:MM)";
+		cout << "Enter time to end: (HH:MM)\n";
 		cin >> endTime;
 
 		string time;
-		time = startTime + ":" + endTime;
+		time = startTime + " - " + endTime;
 		timeSlots[docIndex][lastDocTime] = time;
 	
-		cout << "Do you want to add another time? (y/n) \n";
+		cout << "\nDo you want to add another time? (y/n) \n";
 		cin >> choice;
 	} while ((choice == 'y' || choice == 'Y') && (lastDocTime < 9));
 
@@ -735,10 +735,10 @@ void addTime(string timeSlots[][TIME_NUM], int docIndex, int lastDocTime)
 void removeTime(string timeSlots[][TIME_NUM], int docIndex, int lastDocTime) //F7
 {
 	cout << "Choose time to delete: \n";
-	displayTimeSlots(docIndex); 
+	displayTimeSlots(docIndex, infoDocs[docIndex].docLastTime);
 	int selection;
 	cin >> selection;
-	for (int i = selection-1; i < 9; i++) 
+	for (int i = selection-1; i < infoDocs[docIndex].docLastTime; i++)
 	{
 		timeSlots[docIndex][i] = timeSlots[docIndex][i + 1];
 	}
@@ -747,10 +747,13 @@ void removeTime(string timeSlots[][TIME_NUM], int docIndex, int lastDocTime) //F
 void editTime(string timeSlots[][TIME_NUM], int docIndex)
 {//here
 	cout << "Choose time to edit: \n";
-	displayTimeSlots(docIndex); 
+	displayTimeSlots(docIndex, infoDocs[docIndex].docLastTime);
 	int selection;
 	cin >> selection;
 	addTime(timeSlots, docIndex, selection-2); //to offest increment in the start of the function
+	cout << "\nNew times after editing: \n";
+	displayTimeSlots(docIndex, infoDocs[docIndex].docLastTime);
+
 }
 
 void clearAppointHistory()
@@ -851,6 +854,7 @@ void loadData(appoint infoAppoints[], patient infoPatients[], doc infoDocs[])
 		cout << "Unable to open doctor file";
 
 }
+
 
 void saveData(appoint infoAppoints[], patient infoPatients[], doc infoDocs[])
 {
