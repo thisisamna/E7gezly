@@ -74,9 +74,10 @@ void docReg();
 void displayDocMenu(int docIndex);
 void editDocInfo(doc infoDocs[], int docIndex);
 void docViewAppoints(appoint infoAppoints[], doc infoDocs[], int docIndex);
-void addTime(string timeSlots[][TIME_NUM], int docIndex, int lastDocTime);
-void removeTime(string timeSlots[][TIME_NUM], int docIndex, int lastDocTime);
+void addTime(string timeSlots[][TIME_NUM], int docIndex, int& lastDocTime);
+void removeTime(string timeSlots[][TIME_NUM], int docIndex, int& lastDocTime);
 void editTime(string timeSlots[][TIME_NUM], int docIndex);
+void clearAppointHistory(appoint infoAppoints[], int docIndex);
 
 int main() //start of main
 {
@@ -303,7 +304,8 @@ int patientLogin()
 		{
 			if (password == infoPatients[i].password)
 			{
-				cout << "Hello, " << infoPatients[i].name << "! \n\n";
+				cout << "\n**************************************************\n\n"
+					<<"\nHello, " << infoPatients[i].name << "! \n\n";
 				return i;
 			}
 		}
@@ -606,7 +608,8 @@ void displayDocMenu(int docIndex)
 			<< "3 \t Remove available time \n"
 			<< "4 \t View patients with appointments\n"
 			<< "5 \t Edit personal info\n"
-			<< "6 \t Logout\n\n"
+			<< "6 \t Clear appointment history\n"
+			<< "7 \t Logout\n\n" 
 			<< "Selection: ";
 		int selection;
 		cin >> selection;
@@ -615,20 +618,35 @@ void displayDocMenu(int docIndex)
 		{
 		case 1: //Edit available time
 			editTime(timeSlots, docIndex);
+			cout << "\nSuccessfully edited!\n";
 			break;
 		case 2: //Add available time
-			addTime(timeSlots, docIndex, infoDocs[docIndex].docLastTime);
+			char choice;
+			do 
+			{
+				addTime(timeSlots, docIndex, infoDocs[docIndex].docLastTime);
+				cout << "\nWould you like to add another time? (y/n) \n";
+				cin >> choice;
+			} while ((choice == 'y' || choice == 'Y')&&(infoDocs[docIndex].docLastTime < 10));
+			cout << "\nSuccessfully added!\n";
 			break;
+
 		case 3: //Remove available time
 			removeTime(timeSlots, docIndex, infoDocs[docIndex].docLastTime);
+			cout << "\nSuccessfully removed!\n";
 			break;
 		case 4: //View Patients with appointments
 			docViewAppoints(infoAppoints, infoDocs, docIndex);
 			break;
 		case 5: // Edit personal info
 			editDocInfo(infoDocs, docIndex);
+			cout << "\nSuccessfully edited!\n";
 			break;
-		case 6: // Logout
+		case 6: //Clear appointment history
+			clearAppointHistory(infoAppoints, docIndex);
+			cout << "Successfully cleared!";
+			break;
+		case 7: // Logout
 			cout << "Are you sure you want to log out? (y/n)";
 			cin >> choice;
 			break;
@@ -698,10 +716,8 @@ void docViewAppoints(appoint infoAppoints[], doc infoDocs[], int docIndex)
 		}
 	}
 }
-void addTime(string timeSlots[][TIME_NUM], int docIndex, int lastDocTime)
-{
-	char choice;
-	do {
+void addTime(string timeSlots[][TIME_NUM], int docIndex, int& lastDocTime)
+{	
 		lastDocTime++;
 
 		string startTime, endTime;
@@ -714,12 +730,11 @@ void addTime(string timeSlots[][TIME_NUM], int docIndex, int lastDocTime)
 		time = startTime + " - " + endTime;
 		timeSlots[docIndex][lastDocTime] = time;
 	
-		cout << "\nDo you want to add another time? (y/n) \n";
-		cin >> choice;
-	} while ((choice == 'y' || choice == 'Y') && (lastDocTime < 9));
+		
+	
 
 }
-void removeTime(string timeSlots[][TIME_NUM], int docIndex, int lastDocTime) //F7
+void removeTime(string timeSlots[][TIME_NUM], int docIndex, int& lastDocTime) //F7
 {
 	cout << "Choose time to delete: \n";
 	displayTimeSlots(docIndex, infoDocs[docIndex].docLastTime);
@@ -737,15 +752,20 @@ void editTime(string timeSlots[][TIME_NUM], int docIndex)
 	displayTimeSlots(docIndex, infoDocs[docIndex].docLastTime);
 	int selection;
 	cin >> selection;
-	addTime(timeSlots, docIndex, selection-2); //to offest increment in the start of the function
+	selection -= 2; //to offest increment in the start of the function
+	addTime(timeSlots, docIndex, selection); 
 	cout << "\nNew times after editing: \n";
 	displayTimeSlots(docIndex, infoDocs[docIndex].docLastTime);
 
 }
 
-void clearAppointHistory()
+void clearAppointHistory(appoint infoAppoints[], int docIndex)
 {
-
+	for (int i = 0; i <= lastAppoint; i++)
+	{
+		if (infoAppoints[i].docIndex == docIndex)
+			cancelAppoint(infoAppoints, i);
+	}
 }
 
 
