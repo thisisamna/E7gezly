@@ -157,6 +157,7 @@ menu2: //main menu
 				if (docIndex != -1)
 				{
 					displayDocMenu(docIndex);
+					goto menu1;
 				}
 				else
 					goto menu2;
@@ -175,7 +176,7 @@ menu2: //main menu
 		default:
 			cout << "Please enter a valid choice!";
 		}
-		//exit login menu
+		//exit  menu
 		cout << "\n**************************************************\n\n"
 			<< "Do you want to exit? \n\n"
 			<< "1 \t No, go back to main menu \n"
@@ -598,7 +599,7 @@ int docLogin()
 }
 void displayDocMenu(int docIndex)
 {
-	char choice = 'n';
+	char choice = 'y';
 	do
 	{
 		cout << "\n**************************************************\n\n";
