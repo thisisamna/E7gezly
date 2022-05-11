@@ -615,7 +615,7 @@ void displayDocMenu(int docIndex)
 		{
 		case 1: //Edit available time
 			editTime(timeSlots, docIndex);
-
+			break;
 		case 2: //Add available time
 			addTime(timeSlots, docIndex, infoDocs[docIndex].docLastTime);
 			break;
